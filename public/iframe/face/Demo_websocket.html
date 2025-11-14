@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>人脸检活</title>
+<link rel="stylesheet" href="./css/demo_ocx.css" />
+<script src="js/jquery.min.js"></script>
+<script src="js/CameraHelperWS.js"/></script>
+</head>
+<body onload="init()" onunload="closeDevice();exit();"> <!-- closeCamera();TFace1.EcUninit(); -->
+	<script>
+		var timeBegin;
+		var timeEnd;
+
+		function hideAlpha()
+		{
+			$("#iframe1").css("display", "none");
+		}
+		console.log(CameraHelperWS);
+		/**
+		 * 同时支持wss和ws两种方式，调用者根据需要选择对应的方式
+		 * 1、http下两种方式均可使用
+		 * 2、https下只能使用wss方式
+		 * 3、使用wss方式，必须安装证书，一般SDK安装后会自动安装证书
+		 */
+		var params ={ 
+			/*"host" : "wss://localhost:19932", */
+			"host" : "ws://localhost:18832", 
+			"Infrared" : 0,
+			"imgWidth" : 640,
+			"imgHeight" : 480,
+			"imgCompress" : 85,
+			"pupilDistMin" : 0,
+			"pupilDistMax" : 1000,
+			"minFaceWide" : 60,
+			"isActived" : 1,
+			"nirCount" : 1,
+			"liveThreshold" : "0.6",
+			"isAudio" : 1,
+			"isText" : 1,
+			"timeOut" : 10,
+			"deviceIdxCol" : 0,
+			"deviceIdxNir" : 1,
+			"definitionAsk" : 0,
+			"compareFacePos" : 1,
+			"headLeft" : 10,
+			"headRight" : 10,
+			"headLow" : 0,
+			"headHigh" : 0,
+			"eyeDegree" : 0,
+			"mouthDegree" : 0,
+			"mask" : 1,
+			"glass" : 0,
+			"sunGlass" : 0,
+			"occEx" : 0,
+			"leftCheek" : 50,
+			"rightCheek" : 50,
+			"forehead" : 70,
+			"chin" : 50,
+			"AlphaLayerType" : 0,
+			"FaceRectStyle" : 0,
+			"moveList" : "",
+			"flip" : 1,
+			"updw" : 0,
+			"rota" : 0,
+			"fill" : 1,
+			"roiX" : 0,
+			"roiY" : 0,
+			"roiW" : 0,
+			"roiH" : 0,
+			"brightnessMin" : 50,
+			"brightnessMax" : 255,
+			"showFaceRect" : 0,
+			"delay" : 0,
+			"stableCount" : 0,
+			"stableThreshold" : 0,
+			"unliveEvent" : 0,
+			"multiFace" : 0,
+			"distanceFromAxis" : 0,
+			"openByThread" : 1,
+			"savePath" : "",
+			"backgroundGray" : 255,
+			"LocalFileCache" : 1,
+			"saveResult" : "",
+			"backlightInterval" : 0,
+			"backlightRangeVis" : "9,14",  
+			"backlightRangeNir" : "4,13",
+			"threshold_eye" : 60,  
+			"threshold_mouth" : 15,
+			"threshold_headYaw" : 10, 
+			"threshold_headPitch" : 8, 
+			"language" : 0,
+			"detectInterval" : 0,
+			"liveInterval" : 0,
+			"dualCameras" : "735f2209735f2210", 
+			"singleCameras" : "08060806"
+		};
+		
+		function init()
+		{
+			CameraHelperWS.initParam(params);
+			CameraHelperWS.connect(function(){ // 连接成功
+				//$("#message").text("连接成功");
+				openCamera()
+			}, function(){
+				//$("#message").text("连接失败");
+			});
+		}
+		
+		function exit()
+		{
+			CameraHelperWS.disconnect();
+		}
+			
+		// 打开摄像头
+		function openCamera(){			
+			CameraHelperWS.openCam(function(){	
+					$(".status").text("打开成功");
+					hideAlpha();					
+				}, function(errCode, errMsg){
+					$(".status").text("打开失败");
+				}, function(previewData){
+					$("#imgPreview").attr("src", "data:image/jpg;base64,"+previewData);	
+				});
+				
+			$("#btnOpen").attr("class", "camera-btn open active");
+			$("#btnClose").attr("class", "camera-btn close");
+		}
+
+		function switchResutlStatus(statusOK)
+		{
+			if (statusOK == 1)	// 合格
+			{
+				$("#pass-img").attr("class", "pass-img");
+				$("#pass-desc").attr("class", "pass-desc");		
+				
+				$("#notpass-img").attr("class", "notpass-img hide");
+				$("#notpass-desc").attr("class", "notpass-desc hide");		
+				$("#not-check").attr("class", "not-check hide");	
+			}
+			else if (statusOK == 2) // 不合格
+			{
+				$("#notpass-img").attr("class", "notpass-img");
+				$("#notpass-desc").attr("class", "notpass-desc");	
+				
+				$("#pass-img").attr("class", "pass-img hide");
+				$("#pass-desc").attr("class", "pass-desc hide");			
+				$("#not-check").attr("class", "not-check hide");	
+			}
+			else  // 检测中
+			{
+				$("#not-check").attr("class", "not-check");
+				
+				$("#pass-img").attr("class", "pass-img hide");
+				$("#pass-desc").attr("class", "pass-desc hide");		
+				$("#notpass-img").attr("class", "notpass-img hide");
+				$("#notpass-desc").attr("class", "notpass-desc hide");		
+			}
+		}
+
+		function closeDev()
+		{	
+			CameraHelperWS.closeCam(function(){
+					$("#btnOpen").attr("class", "camera-btn open");
+					$("#btnClose").attr("class", "camera-btn close active");
+			});			
+		}
+
+		// 关闭摄像头
+		function closeCamera(){
+			$("#iframe1").css("display", "");
+			
+			setTimeout("closeDev()", 100);
+		}
+
+		// 执行检活
+		function checklive(){
+			
+			$("#take-img").attr("src", "data:jpg;base64,"+"");
+			$("#take-img").attr("class", "hide");
+			$("#check-img").attr("class", "check-img hide");
+			
+			switchResutlStatus(0);
+			
+			$("#timeMS").text("");
+			timeBegin = new Date().getTime();
+			CameraHelperWS.faceCheck(function(data){
+				timeEnd = new Date().getTime();				
+				console.log("begin="+timeBegin);
+				console.log("end="+timeEnd);
+				$("#timeMS").text(timeEnd - timeBegin +"ms");
+				
+				var arrayData = data.split("$&");		// 结果数据格式：全图+"$&"+坐标+"$&"+默认裁剪图
+				console.log("faceRect="+arrayData[1]);	// 人脸坐标，形如："100, 100, 150, 150"
+				var imgB64Whole = arrayData[0];	// 全图
+				var imgB64Face = arrayData[2];		// 默认裁剪图
+				
+				$("#take-img").attr("src", "data:jpg;base64,"+imgB64Whole);
+				$("#take-img").attr("class", "");
+			
+				switchResutlStatus(1);
+			
+				$("#check-img").attr("src", "data:jpg;base64,"+imgB64Face);
+				$("#check-img").attr("class", "");			
+				
+				//CameraHelperWS.cropImage(imgB64Whole, arrayData[1], 15000, function(data){
+				//	$("#check-img").attr("src", "data:jpg;base64,"+data);
+				//	$("#check-img").attr("class", "");	
+				//}, function(errCode, errMsg){
+				//
+				//});
+				
+			}, function(errCode, errMsg){	// 检活失败
+				console.log("failed"+errCode);
+				switchResutlStatus(2);
+				
+				// 抓拍当前
+				//CameraHelperWS.snapFrame(0, function(data){	
+				//	var arrayData = data.split("$&");		// 结果数据格式：全图+"$&"+坐标
+				//	console.log("faceRect="+arrayData[1]);	// 人脸坐标，形如："100, 100, 150, 150"
+				//
+				//	$("#take-img").attr("src", "data:jpg;base64,"+arrayData[0]);
+				//	$("#take-img").attr("class", "");
+				//}, function(errCode, errMsg){
+				//	console.log("snap failed "+errCode);
+				//});
+			});
+		}
+
+	</script>
+	<div class="header">
+		<img class="logo" src="./img/logo.png"></img>
+	</div>
+	<div class="main">
+		<div class="left">
+			<div class="title">
+				<span class="text-cn">识别结果</span>
+				<span class="text-en">IDENTITY RESULTS</span>
+			</div>
+			<div class="take-result">
+				<div class="label">抓拍结果</div>
+				<div class="take-container">
+					<img id="take-img" class="hide" alt="抓拍结果" src=""></img>
+				</div>
+			</div>
+			<div class="analysis-result">
+				<div class="label">分析结果</div>
+				<div class="analysis-content">
+					<div class="check-img-container">
+						<img id="check-img" class="check-img hide" alt="检活图片" src=""></img>
+					</div>
+					<div class="check-result">
+						<!--span>分析结果判断为</span><br/-->
+						<span id="not-check" class="not-check">无数据</span>
+						<img id="pass-img" class="pass-img hide" alt="检活结果" src="./img/duihao.png"></img>
+						<span id="pass-desc" class="pass-desc hide">符合活体要求</span>
+						<img id="notpass-img" class="notpass-img hide" alt="检活结果" src="./img/cha.png"></img>
+						<span id="notpass-desc" class="notpass-desc hide">不符合活体要求</span>
+						<label id="timeMS" style="height:20px"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<img class="center" id="imgPreview">		
+		</img>
+		<div class="right">
+			<div class="title">
+				<span class="text-en">DETECTION MODE</span>
+				<span class="text-cn">检测模式</span>
+			</div>
+			<div id="double-eye-btn" class="double-eye-btn active" onclick="">双目检活</div>
+			<div class="title">
+				<span class="text-en">CAMERA SETTINGS</span>
+				<span class="text-cn">摄像头设置</span>
+			</div>
+			<div class="camera-controll">
+				<span id="btnOpen" class="camera-btn open" onclick="openCamera()">打开摄像头</span>
+				<span id="btnClose" class="camera-btn close" onclick="closeCamera()">关闭摄像头</span>
+			</div>
+			<span class="checklive-btn" onclick="checklive()">活体检测</span>
+		</div>
+	</div>
+	<div class="sys-notice" style="display: none;">
+		系统运行中...
+		<span class="check-btn" onclick="handleCheck()">活体检测</span>
+	</div>
+	
+	
+</body>
+</html>

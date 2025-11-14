@@ -1,0 +1,34 @@
+/*
+* 全局公共样式
+*/
+*{
+  margin: 0;
+  padding: 0;
+}
+body{
+  min-width: 1300px;
+  color: #333;
+}
+ul, ol{
+  list-style: none;
+}
+h1{
+  text-align: center;
+  margin-top: 50px;
+}
+.fl{
+  float: left;
+}
+.fr{
+  float: right;
+}
+.clearfix:after{
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.notice_page.el-dialog__header, .name_page .el-dialog__header{
+  padding: 0;
+}
+

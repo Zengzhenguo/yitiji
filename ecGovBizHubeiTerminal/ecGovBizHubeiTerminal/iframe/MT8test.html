@@ -1,0 +1,416 @@
+﻿
+<html>
+    <head>
+    <title>WebApi</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="./jquery-1.10.2.js" language="javascript"></script>
+    <script>
+    //根据COS指令下拉框选择来改变写入数据内容
+    function cpumycos()
+    {
+        var scos = document.getElementById('coscpu').value;	//获取下拉框当前选值
+        if(scos == 0)
+            WriteDatacpu.value = "0084000008";
+        else if(scos == 1)
+            WriteDatacpu.value = "00a40000023f00";
+    }
+    
+    function OpenDevice()//打开设备
+    {
+        var cpucardno = document.getElementById('cardno').value;
+        $.ajax({
+                        dataType: "JSONP",                    
+                        type: "get",
+                        url: "http://localhost:8080/api/OpenDevice",
+                        data : {Port:"100",Baud:"0"},
+                        success: function (data) {
+                            alert(111)
+                            alert(JSON.stringify(data))
+                            if(data.retcode == 0)
+                            {
+                                alert("打开设备成功:" + data.errmsg);
+                            }else
+                            {
+                                alert("打开设备失败，错误码为：" + data.retcode + data.errmsg);
+                            }
+                            //成功执行
+                            console.log(data);
+                        },
+                        error: function (e) {
+                            //失败执行
+                            alert(e.status + ',' + e.statusText);
+                            console.log(e);
+                        }
+                    });
+                    
+    }
+    
+    function CloseDevice()//关闭设备
+    {
+        $.ajax({
+                        dataType: "JSONP",                    
+                        type: "get",
+                        url: "http://localhost:8080/api/CloseDevice",
+                        success: function (data) {
+
+                            if(data.retcode == 0)
+                            {
+                                alert("关闭设备成功");
+                            }else
+                            {
+                                alert("关闭设备失败，错误码为：" + data.retcode + data.errmsg);
+                            }
+                            //成功执行
+                            console.log(data);
+                        },
+                        error: function (e) {
+                            //失败执行
+                            alert(e.status + ',' + e.statusText);
+                            console.log(e);
+                        }
+                    });
+    }
+    
+    function CardPowerOn()//卡片上电复位
+    {
+        var cpucardno = document.getElementById('cardno').value;
+        $.ajax({
+                        dataType: "JSONP",                    
+                        type: "get",
+                        url: "http://localhost:8080/api/CardPowerOn",
+                        data : {CardSet:cpucardno},
+                        success: function (data) {
+                            if(data.retcode == 0)
+                            {
+                                ReadDatacpu.value = data.retmsg;
+                                UidCpu.value = data.cardno;
+                            }else
+                            {
+                                alert("卡片复位失败，错误码为：" + data.retcode + data.errmsg);
+                            }
+                            //成功执行
+                            console.log(data);
+                        },
+                        error: function (e) {
+                            //失败执行
+                            alert(e.status + ',' + e.statusText);
+                            console.log(e);
+                        }
+                    });
+                    
+    }
+    
+    function CardAPDU()//发送命令
+    {
+        var cpucardno = document.getElementById('cardno').value;
+        var sAPDU = document.getElementById("WriteDatacpu").value;
+        
+        $.ajax({
+                        dataType: "JSONP",                    
+                        type: "get",
+                        url: "http://localhost:8080/api/CardAPDU",
+                        data : {CardSet:cpucardno,APDU:sAPDU},
+                        success: function (data) {
+                            if(data.retcode == 0)
+                            {
+                                ReadDatacpu.value = data.retmsg;
+                                UidCpu.value = data.cardno;
+                            }else
+                            {
+                                alert("卡片APDU失败，错误码为：" + data.retcode + data.errmsg);
+                            }
+                            //成功执行
+                            console.log(data);
+                        },
+                        error: function (e) {
+                            //失败执行
+                            alert(e.status + ',' + e.statusText);
+                            console.log(e);
+                        }
+                    });
+    }
+    
+    function CardPowerOff()//卡片下电
+    {
+        var cpucardno = document.getElementById('cardno').value;
+        $.ajax({
+                        dataType: "JSONP",                    
+                        type: "get",
+                        url: "http://localhost:8080/api/CardPowerOff",
+                        data : {CardSet:cpucardno},
+                        success: function (data) {
+                            if(data.retcode == 0)
+                            {
+                                ReadDatacpu.value = data.retmsg;
+                                UidCpu.value = data.cardno;
+                                alert("卡片下电成功");
+                            }else
+                            {
+                                alert("卡片下电失败，错误码为：" + data.retcode + data.errmsg);
+                            }
+                            //成功执行
+                            console.log(data);
+                        },
+                        error: function (e) {
+                            //失败执行
+                            alert(e.status + ',' + e.statusText);
+                            console.log(e);
+                        }
+                    });
+    }
+    //二代身份证操作函数//
+    
+    function GetCardinfo()
+    {
+        $.ajax({
+                        dataType: "JSONP",                    
+                        type: "get",
+                        url: "http://localhost:8080/api/ReadMsg",
+                        success: function (data) {
+                            if(data.retcode == 0)
+                            {
+                                CardType.value =data.CardType;
+                                cardname.value =data.name;
+                                sex.value = data.sex;
+                                national.value =data.nation;
+                                birthday.value =data.born;
+                                number.value =data.cardno;
+                                address.value =data.address;
+                                IssuingAuthority.value =data.police;
+                                validity.value =data.userlifeb;
+                                validity2.value =data.userlifee;
+                                IssuesTimes.value =data.IssuesTimes;
+                                FpData.value =data.FpData;
+                                PassID.value =data.PassID;
+                                document.getElementById('img').src = "";	
+                                document.getElementById('img').src="data:image/jpg;base64," + data.photobase64;
+                                //alert(data.photobase64);
+                                
+                            }else
+                            {
+                                CardType.value ="";
+                                cardname.value = "";
+                                sex.value = "";
+                                national.value ="";
+                                birthday.value ="";
+                                number.value ="";
+                                address.value ="";
+                                IssuingAuthority.value ="";
+                                validity.value ="";
+                                validity2.value ="";
+                                IssuesTimes.value ="";
+                                FpData.value ="";
+                                PassID.value ="";
+                                document.getElementById('img').src = "";
+                                alert("读二代证失败，错误码为：" + data.retcode + data.errmsg);
+                            }
+                            //成功执行
+                            console.log(data);
+                        },
+                        error: function (e) {
+                            //失败执行
+                            alert(e.status + ',' + e.statusText);
+                            console.log(e);
+                        }
+                    });
+    }
+    
+    function ReadID()
+    {
+    var flag = false;
+     var cpucardno = document.getElementById('cardno').value;
+        $.ajax({
+                        dataType: "json",                    
+                        type: "get",
+                        async:false,
+                        url: "http://localhost:8080/api/OpenDevice",
+                        data : {Port:"100",Baud:"0"},
+                        success: function (data) {
+                            if(data.retcode == 0)
+                            {
+                                //alert("打开设备成功:" + data.errmsg);
+                            }else
+                            {
+                                alert("打开设备失败，错误码为：" + data.retcode + data.errmsg);
+                            }
+                            //成功执行
+                            console.log(data);
+                            flag =  true;
+                        },
+                        error: function (e) {
+                            //失败执行
+                            alert(e.status + ',' + e.statusText);
+                            console.log(e);
+                        }
+                    });
+                    if(flag == false)
+                        return false;
+                    
+        $.ajax({
+                        dataType: "json",                    
+                        type: "get",
+                        async:false,
+                        url: "http://localhost:8080/api/ReadMsg",
+                        success: function (data) {
+                            if(data.retcode == 0)
+                            {
+                                CardType.value =data.CardType;
+                                cardname.value =data.name;
+                                sex.value = data.sex;
+                                national.value =data.nation;
+                                birthday.value =data.born;
+                                number.value =data.cardno;
+                                address.value =data.address;
+                                IssuingAuthority.value =data.police;
+                                validity.value =data.userlifeb;
+                                validity2.value =data.userlifee;
+                                IssuesTimes.value =data.IssuesTimes;
+                                FpData.value =data.FpData;
+                                PassID.value =data.PassID;
+                                document.getElementById('img').src = "";	
+                                document.getElementById('img').src="data:image/jpg;base64," + data.photobase64;
+                                //alert(data.photobase64);
+                                
+                            }else
+                            {
+                                CardType.value ="";
+                                cardname.value = "";
+                                sex.value = "";
+                                national.value ="";
+                                birthday.value ="";
+                                number.value ="";
+                                address.value ="";
+                                IssuingAuthority.value ="";
+                                validity.value ="";
+                                validity2.value ="";
+                                IssuesTimes.value ="";
+                                FpData.value ="";
+                                PassID.value ="";
+                                document.getElementById('img').src = "";
+                                alert("读二代证失败，错误码为：" + data.retcode + data.errmsg);
+                            }
+                            //成功执行
+                            console.log(data);
+                        },
+                        error: function (e) {
+                            //失败执行
+                            alert(e.status + ',' + e.statusText);
+                            console.log(e);
+                        }
+                    });
+                    
+                    $.ajax({
+                        dataType: "json",                    
+                        type: "get",
+                        async:false,
+                        url: "http://localhost:8080/api/CloseDevice",
+                        success: function (data) {
+                            if(data.retcode == 0)
+                            {
+                                //alert("关闭设备成功");
+                            }else
+                            {
+                                alert("关闭设备失败，错误码为：" + data.retcode + data.errmsg);
+                            }
+                            //成功执行
+                            console.log(data);
+                        },
+                        error: function (e) {
+                            //失败执行
+                            alert(e.status + ',' + e.statusText);
+                            console.log(e);
+                        }
+                    });
+    }
+    </script>
+    </head> 
+    <body>
+    <fieldset>
+    <legend>操作CPU卡函数组</legend>
+    <label>COS指令：
+      <select name="coscpu" id="coscpu" onchange="cpumycos()">
+        <option value="0" SELECTED>取随机数08</option>
+        <option value="1">选择MF</option>
+      </select>
+    </label>
+    <label>卡座选择：
+      <select name="cardno" id="cardno">
+        <option value="0" SELECTED>大卡座</option>
+        <option value="16">PSAM1</option>
+        <option value="17">PSAM2</option>
+        <option value="18">PSAM3</option>
+        <option value="19">PSAM4</option>
+        <option value="255" >非接卡座</option>
+      </select>
+    </label>
+    </p>
+    CPU卡UID：
+    <input type="text" name="UidCpu" id="UidCpu" maxlength="10" size="10" >
+    </p>
+    写入数据：
+    <input type="text" name="WriteDatacpu" id="WriteDatacpu" maxlength="3000" size="83" value="0084000008"> 
+    </p>
+    读出数据：
+    <input type="text" name="ReadDatacpu" id="ReadDatacpu" maxlength="3000" size="83"> 
+    </p>
+    <form name="CPU卡操作">
+    <input type="button" onclick="javascript:OpenDevice()"  value="打开设备" ><!--disabled = "false" -->
+    <input type="button" onclick="javascript:CloseDevice()"  value="关闭设备" >
+    <input type="button" onclick="javascript:CardPowerOn()" value="上电复位" >
+    <input type="button" onclick="javascript:CardAPDU()" value="发送命令" >
+    <input type="button" onclick="javascript:CardPowerOff()" value="卡片下电" >
+    </form>
+    </fieldset>
+    </br>
+    
+    <fieldset>
+    <legend>二代证函数</legend>
+    </p>
+    卡类型：
+    <input type="text" name="CardType" id="CardType" maxlength="30" size="30" > 
+    </p>
+    姓名：
+    <input type="text" name="cardname" id="cardname" maxlength="30" size="30" > 
+    </p>
+    英文姓名：
+    <input type="text" name="EngName" id="EngName" maxlength="30" size="30" > 
+    </p>
+    性别：
+    <input type="text" name="sex" id="sex" maxlength="10" size="10" >
+    民族：
+    <input type="text" name="national" id="national" maxlength="10" size="10" > 
+    </p>
+    出生日期：
+    <input type="text" name="birthday" id="birthday" maxlength="25" size="25"> 
+    </p> 
+    公民身份号码：
+    <input type="text" name="number" id="number" maxlength="30" size="30"> 
+    </p> 
+    通行证号码：
+    <input type="text" name="PassID" id="PassID" maxlength="30" size="30"> 
+    </p>
+    住址：
+    <input type="text" name="address" id="address" maxlength="60" size="60">
+    </p>
+    签发机关：
+    <input type="text" name="IssuingAuthority" id="IssuingAuthority" maxlength="33" size="35"> 
+    </p>
+    有效期：
+    <input type="text" name="validity" id="validity" maxlength="15" size="15"> 
+    至
+    <input type="text" name="validity2" id="validity2" maxlength="15" size="15"> 
+    </p>
+    签发次数：
+    <input type="text" name="IssuesTimes" id="IssuesTimes" maxlength="30" size="30"> 
+    </p>
+    指纹信息：
+    <input type="text" name="FpData" id="FpData" maxlength="3000" size="100"> 
+    照片：
+    <img id="img" height="102" size="126"> 
+    <form name="二代证操作">
+    <input type="button" onclick="GetCardinfo()" value="读二代证信息" >
+    <input type="button" onclick="ReadID()" value="一键读身份证" >
+    </form>
+    </fieldset>
+    </body>
+    </html>

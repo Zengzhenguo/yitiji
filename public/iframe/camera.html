@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style type="text/css">
+    li {
+      float: left;
+      /* 往左浮动 */
+    }
+
+    #image_clear {
+      clear: both;
+    }
+  </style>
+
+  <script src="../jquery-1.10.2.js"></script>
+  <!--script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script-->
+  <script>
+    var current_dev = null;//当前打开的设备
+    var dev_count = 0;//设备数量　
+    var image_base64_1 = null;//人证比对图像
+    var image_base64_2 = null;
+
+    var resid = 0;			  //分辨率索引
+    var err_count = 0;		  //获取到请稍候的次数
+
+    $(document).ready(function () {
+      $("#video").attr('src', 'wait.jpg');
+
+      GetDeviceCount().then(function (count) {
+        dev_count = count;
+        if ((dev_count != null) && (dev_count != 0)) {
+          GetResolution(0);
+          resid = $("#resid_num").val();
+          StartPreview(0, resid, "");
+          current_dev = 0;
+        }
+        else {
+          alert("未连接高拍仪");
+        }
+      });
+
+      $("#get_picture").click(function () {
+        getPic();
+      });
+      $("#get_ocr").click(function () {
+        getOCR();
+      });
+      $("#rotate").click(function () {
+        Rotate();
+      });
+      $("#desk").click(function () {
+        var checked = this.checked;
+        EnableDeskImage(checked ? 1 : 0);
+      }); change_resid
+      $("#change_resid").click(function () {
+        resid = $("#resid_num").val();
+        StartPreview(current_dev, resid, "");
+      });
+    });
+
+    $(window).unload(function () {
+      if (current_dev != null)
+        StopPreview();
+    });
+
+    function GetResolution(dev_idx) {
+      $.get("http://127.0.0.1:8888/GetResolution?dev_idx=" + dev_idx, function (data) {
+        //alert(JSON.stringify(data));
+        var inputresid = document.getElementById("resid_num");
+        inputresid.max = JSON.stringify(data.data.length);
+      });
+    }
+
+    function GetDeviceCount() {
+      return new Promise(function (resolve, reject) {
+        $.get("http://127.0.0.1:8888/GetDeviceCount", function (data) {
+          if (data.returnCode == 0) {
+            resolve(data.data);
+          }
+          else {
+            reject(data.returnMsg);
+          }
+        }).error(function (xhr, status, info) {
+          reject(status + " " + info);
+        }); StartPreview(current_dev, 0, "");
+      });
+    }
+
+    function StartPreview(dev_idx, res_id, pixfmt) {
+      if ((dev_count == null) || (dev_count == 0))
+        return;
+
+      GetResolution(dev_idx);
+
+      $("#video").attr('src', 'wait.jpg');
+      if (current_dev != null)
+        StopPreview();
+
+      $.get("http://127.0.0.1:8888/StartPreview?dev_idx=" + dev_idx + "&res_id=" + res_id + "&pixfmt=pixfmt", function (data) {
+        if (data.returnCode == 0) {
+          current_dev = dev_idx;
+          //启动定时器
+          timer = setInterval(function () {
+            getFrame();
+            var number = parseInt($("#state_label").text());
+            $("#state_label").text(number + 1);
+          }, 300);//对于配置差的电脑可降低刷新频率
+        }
+        else {
+          alert(data.returnMsg);
+        }
+      }).error(function (xhr, status, info) {
+        reject(status + " " + info);
+      });
+    }
+
+    function StopPreview(dev_idx) {
+      if (current_dev == null)
+        return;
+
+      $.get("http://127.0.0.1:8888/StopPreview?dev_idx=" + dev_idx, function (data) {
+        if (data.returnCode == 0) {
+          current_dev = null;
+          //关闭定时器
+          clearInterval(timer);
+          $("#state_label").text(0);
+        }
+        else {
+          alert(data.returnMsg);
+        }
+      }).error(function (xhr, status, info) {
+        reject(status + " " + info);
+      });
+    }
+
+    function getPic() {
+      if ($("#image_list").children().length >= 4)
+        $("#image_list").empty();
+
+      $.get("http://127.0.0.1:8888/getPic?savepath=" + $("#image_path").val() + "&quality=80", function (data) {
+        if (data.returnCode == 0) {
+          var text = "";
+          text = '<li><img style="padding:5px;" height="120" src="data:image/jpg;base64,' + data.data.img + '">' + '</img></li>';
+          $("#image_list").append(text);
+        }
+        else {
+          alert(data.returnMsg);
+        }
+      }).error(function (xhr, status, info) {
+        reject(status + " " + info);
+      });
+    }
+
+    function reStartPreview() {
+      resid++;
+      err_count = 0;
+      StartPreview(current_dev, resid, "");
+      if (resid > 5) {
+        StopPreview(current_dev);
+        resid = 0;
+        alert("没有合适的分辨率！");
+      }
+    }
+
+    function getOCR() {
+      $.get("http://127.0.0.1:8888/getOCR?savepath=" + $("#OCR_path").val() + "&", function (data) {
+        if (data.returnCode == 0) {
+          // alert(data.data.img);
+          $('textarea').val(data.data.img);
+        }
+      });
+    }
+
+    function getFrame() {
+      $.get("http://127.0.0.1:8888/getFrame", function (data) {
+        if (data.returnCode == 0) {
+          //alert('data:image/jpg;base64,' + data.data);
+          $("#video").attr('src', 'data:image/jpg;base64,' + data.data.img);
+          if (err_count > 0) {
+            err_count = 0;
+          }
+        }
+        else {
+          //alert(data.returnMsg);
+          err_count++;
+          if (err_count > 20) {
+            //reStartPreview();
+          }
+
+        }
+      }).error(function (xhr, status, info) {
+        clearInterval(timer);
+        reject(status + " " + info);
+      });
+    }
+
+    function Rotate() {
+      $.get("http://127.0.0.1:8888/getRotate", function (data) {
+        if (data.returnCode == 0) {
+          var new_rotate = parseInt(data.data) + 1;
+          new_rotate = new_rotate > 3 ? 0 : new_rotate;
+          $.get("/Rotate?count=" + new_rotate, function (data) {
+            if (data.returnCode != 0) {
+              alert(data.returnMsg);
+            }
+          });
+        }
+      });
+    }
+
+    function EnableDeskImage(enable) {
+      $.ajax({
+        url: "http://127.0.0.1:8888/EnableDeskImage?enable=" + enable,
+        type: "GET",
+        success: function (data) {
+          if (data.returnCode == 0) {
+
+          }
+          else {
+            alert(data.returnMsg);
+          }
+        },
+        error: function (xhr, textStatus, errorThrown) {
+          alert("错误提示： " + xhr.status + " " + xhr.readyState + " " + textStatus);
+        }
+      });
+    }
+
+  </script>
+</head>
+
+<body>
+  <div>
+    <img id="video" height="600" />
+  </div>
+  <div>
+    保存路径：<input type="text" id="image_path" value="D://Test.jpg" />
+    <input id="desk" type="checkbox" />纠偏
+    <button id="rotate">旋转</button>
+    <button id="get_picture">拍照</button>
+  </div>
+  <br />
+  <div>
+    分辨率索引：<input type="number" id="resid_num" min="0" max="10" value="0" />
+    <button id="change_resid">切换分辨率</button>
+    <br />
+    通用OCR图片路径:<input type="text" id="OCR_path" value="D://Test.jpg" />
+    <button id="get_ocr">识别图片信息</button>
+    <br />
+    OCR识别到的数据：<textarea id="id_avatar" name="description" cols="80" rows="20"></textarea>
+    <br />
+  </div>
+  <div>
+    <ui id="image_list">
+    </ui>
+    <p id="image_clear"></p>
+  </div>
+</body>
+
+</html>

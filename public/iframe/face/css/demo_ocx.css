@@ -1,0 +1,487 @@
+html,body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	font-size: 14px;
+	overflow: hidden;
+	font-family: "Source Han Sans CN","微软雅黑";
+    color: #66707B;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	user-select: none;
+}
+body{
+	background-image: url(../img/背景.png);
+	background-repeat:no-repeat; 
+	background-size:100% 100%;
+	-moz-background-size:100% 100%;
+}
+ul,li{
+	list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.header {
+    text-align: center;
+    margin: 30px 0px 15px 0px;
+}
+.logo {
+	width: 200px;
+}
+.main {
+	background: linear-gradient(-135deg, transparent 40px,  #282B35 0) top right;
+	height: 552px;
+    width: 1340px;
+    margin: 0 auto;
+    padding: 44px 32px 48px;
+    box-sizing: border-box;
+	position: relative;
+}
+.main:before {
+    width: 0;
+    height: 0;
+    border-top: 40px solid #282B35;
+    border-left: 40px solid transparent;
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.hide{
+	display:none !important;
+}
+.main .title {
+    border-bottom: 1px solid #66707B;
+    padding-bottom: 10px;
+}
+.main .title .text-cn {
+    font-size: 16px;
+	font-weight: bold;
+}
+.main .title .text-en {
+    font-size: 12px;
+}
+.left {
+	width: 294px;
+    height: 100%;
+    float: left;
+    padding: 0px 32px 0px 0px;
+}
+
+.left .label {
+    color: #66707B;
+    line-height: 40px;
+    font-size: 12px;
+}
+.left .take-container {
+	width: 280px;
+    padding: 4px;
+    height: 209px;
+    border: 3px solid #009EFE;
+    box-sizing: border-box;
+    text-align: center;
+    background: url(../img/zhanwei.png) no-repeat center #26282e;
+    background-size: 25px 25px;
+}
+.left .take-container img{
+	width: 100%;
+	height: 100%;
+}
+.left .analysis-content {
+    width: 280px;
+    padding: 4px;
+    height: 137px;
+    border: 3px solid #213D54;
+    box-sizing: border-box;
+	background-color: #272e3a;
+}
+.left .check-img-container{
+	width: 113px;
+    height: 121px;
+	float: left;
+	background: url(../img/zhanwei.png) no-repeat center #26282e;
+    background-size: 25px 25px;
+}
+.left .check-container{
+	width: 100%;
+    height: 100%;
+}
+#check-img{
+	width: 100%;
+    height: 100%;
+}
+.left .check-result {
+	margin-top:20px;
+    width: calc(100% - 113px);
+    float: right;
+    text-align: center;
+    color: #66707B;
+    line-height: 45px;
+}
+.left .pass-img,.left .notpass-img {
+    width: 29px;
+}
+.left .pass-desc {
+    color: #05eb1f;
+    line-height: 19px;
+    display: block;
+}
+.left .notpass-desc {
+    color: #CB0700;
+    line-height: 19px;
+    display: block;
+}
+.center {
+    width: 607px;
+    height: 455px;
+    float: left;
+    position: relative;
+}
+.center .modal{
+	background-image: url(../img/视频遮罩.png);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    opacity: 0.7;
+}
+.center .loading{
+	background-image: url(../img/loading.png);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    height: 400px;
+    width: 400px;
+    position: absolute;
+	opacity: 0.7;
+    left: 105px;
+    top: 28px;
+}
+
+#iframe1,#iframe2{
+ position:absolute; 
+ visibility:inherit; 
+ top:0px;
+ left:0px;
+ width:100%; 
+ height:100%;
+ z-index:-1; 
+ filter:alpha(opacity=0);
+ -moz-opacity:0;
+ -khtml-opacity:0; 
+ opacity: 0;
+}
+
+@-webkit-keyframes rotation {
+	from {
+		-webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+	to {
+		-webkit-transform: rotate(360deg);
+		transform: rotate(360deg);
+	}
+}
+@-ms-keyframes rotation {
+	from {
+		-ms-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+	to {
+		-ms-transform: rotate(360deg);
+		transform: rotate(360deg);
+	}
+}
+
+.loading{
+	animation: rotation 2s linear infinite;
+	-moz-animation: rotation 2s linear infinite;
+	-webkit-animation: rotation 2s linear infinite;
+	-o-animation: rotation 2s linear infinite;
+}
+.right{
+	width: 338px;
+    height: 100%;
+    float: left;
+    padding: 0px 0px 0px 32px;
+    box-sizing: border-box;
+}
+.right .title{
+	text-align: right;
+}
+.timeMS{
+	text-align:center;
+	width:100%;
+	float:right;
+}
+.right .double-eye-btn {
+    background-image: url(../img/大按钮未选中.png);
+    height: 49px;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    margin: 20px 0 25px;
+    cursor: pointer;
+	color: #79797B;
+    text-align: center;
+    line-height: 49px;
+	position: relative;
+	font-weight: bold;
+}
+.right .double-eye-btn.active,.right .double-eye-btn:hover{
+	background-image: url(../img/大按钮高光.png);
+	color: #fff;
+}
+.right .double-eye-btn.active:before,.right .double-eye-btn:hover:before{
+	content: '';
+    width: 30px;
+    height: 20px;
+    display: inline-block;
+    position: absolute;
+    left: 20px;
+    top: 15px;
+    background-image: url(../img/双目活检icon.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+.right .double-eye-btn.active:after,.right .double-eye-btn:hover:after{
+	content: '';
+    width: 19px;
+    height: 19px;
+    display: inline-block;
+    position: absolute;
+    right: 0px;
+	bottom: 0px;
+    background-image: url(../img/单选选中.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+
+/**模拟select框START*/
+.right .sel-container {
+    position: relative;
+}
+.right .selectd-show {
+	height: 49px;
+    line-height: 49px;
+    color: #79797B;
+    position: relative;
+    border: 2px solid #44464D;
+    margin-top: 20px;
+    background: url(../img/下拉箭头.png) right 15px center no-repeat #26282E;
+    background-size: 15px 8px;
+    font-size: 14px !important;
+    font-family: "Source Han Sans CN","微软雅黑" !important;
+    font-weight: bold;
+    text-align: center;
+    text-align-last: center;
+    cursor: pointer;
+}
+.right .selectd-show:before{
+	content: '';
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    position: absolute;
+    left: 20px;
+    top: 12px;
+    background-image: url(../img/摄像头icon未激活.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+	z-index: 1000000;
+}
+.right .selectd-show.active,.right .selectd-show:hover{
+    border: 2px solid #23A0F5;
+	color: #fff;
+}
+.right .selectd-show.active:before,.right .selectd-show:hover:before{
+	background-image: url(../img/摄像头icon.png);
+}
+.right .sel-options {
+    position: absolute;
+    z-index: 99999999999999999;
+    width: 100%;
+    background-color: #26282E;
+    border: 2px solid #44464D;
+    border-top: none;
+    line-height: 25px;
+    color: #fff;
+    padding: 10px 0px;
+    box-sizing: border-box;
+}
+.right .option-item {
+	padding-left: 10px;
+    border-bottom: 1px solid #1b1b1b;
+    cursor: pointer;
+}
+.right .option-item:first-child{
+	border-top: 1px solid #1b1b1b;
+}
+.right .option-item:hover{
+	background-color: #23A0F5;
+}
+
+/**模拟select框END*/
+
+
+.right .camera-controll {
+	height: 120px;
+    margin-top: 20px;
+    position: relative;
+}
+.right .camera-controll:before{
+    content: '';
+    position: absolute;
+    display: block;
+    width: 100%;
+    border-top: 1px dotted #44464D;
+    bottom: -24px;
+}
+.right .camera-btn{
+	height: 49px;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    color: #79797B;
+    text-align: center;
+    line-height: 50px;
+    position: relative;
+    float: left;
+    width: 100%;
+    padding-left: 2px;
+    box-sizing: border-box;
+	font-weight: bold;
+}
+
+#btnClose{
+	margin-top:20px;
+}
+
+.right .camera-btn:before{
+	content: '';
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    position: absolute;
+    left: 28px;
+    top: 16px;
+    background-size: 100%;
+    background-repeat: no-repeat;
+	z-index: 1000000;
+}
+.right .camera-btn.active:after,.right .camera-btn:hover:after{
+	content: '';
+    width: 19px;
+    height: 19px;
+    display: inline-block;
+    position: absolute;
+    right: 0px;
+	bottom: 0px;
+    background-image: url(../img/单选选中.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+.right .open {
+    background-image: url(../img/大按钮未选中.png); 
+}
+.right .open.active, .right .open:hover{
+    background-image: url(../img/单选按钮选中高光.png); 
+	color: #fff;
+}
+.right .open:before{
+    background-image: url(../img/打开摄像头2.png);
+}
+.right .open.active:before,.right .open:hover:before{
+    background-image: url(../img/打开摄像头1.png);
+}
+.right .close {
+    background-image: url(../img/大按钮未选中.png);
+}
+.right .close.active, .right .close:hover{
+    background-image: url(../img/单选按钮选中高光.png); 
+	color: #fff;
+}
+.right .close:before{
+    background-image: url(../img/关闭摄像头1.png);
+}
+.right .close.active:before,.right .close:hover:before{
+    background-image: url(../img/关闭摄像头2.png);
+}
+.right .checklive-btn{
+	width: 100%;
+    height: 49px;
+    cursor: pointer;
+    text-align: center;
+    background-image: url(../img/检测按钮.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    color: #fff;
+    font-weight: bold;
+    padding-left: 55px;
+    box-sizing: border-box;
+    font-size: 18px;
+    line-height: 48px;
+    display: block;
+    position: relative;
+    margin-top: 41px;
+}
+.right .checklive-btn.check-btn-opacity{
+	opacity: 0.7;
+}
+.right .checklive-btn:before{
+	content: '';
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    position: absolute;
+    left: 90px;
+    top: 12px;
+    background-image: url(../img/检活icon.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    z-index: 1000000;
+}
+.sys-notice{
+    background-image: url(../img/系统通知栏.png);
+    width: 1340px;
+    margin: 24px auto;
+    height: 58px;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    color: #79797B;
+    text-align: center;
+    line-height: 58px;
+    position: relative;
+    font-size: 18px;
+}
+.sys-notice .check-btn{
+	width: 292px;
+	height: 100%;
+	position: absolute;
+	cursor: pointer;
+	right:0px;
+	top:0px;
+	text-align: center;
+	background-image: url(../img/检测按钮.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+	color: #fff;
+	font-weight: bold;
+	padding-left: 55px;
+    box-sizing: border-box;
+}
+.sys-notice .check-btn.check-btn-opacity{
+	opacity: 0.7;
+}
+.sys-notice .check-btn:before{
+	content: '';
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    position: absolute;
+    left: 90px;
+    top: 17px;
+    background-image: url(../img/检活icon.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+	z-index: 1000000;
+}

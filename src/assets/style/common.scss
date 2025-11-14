@@ -1,0 +1,58 @@
+/* 搜索框 */
+.input-search {
+  position: relative;
+  display: inline-block;
+
+  border: 1px solid #d4d4d4;
+  border-radius: 38px;
+
+  > div {
+    display: flex;
+    width: 262px;
+    height: 38px;
+    align-items: center;
+
+    &:before,
+    &:after {
+      position: absolute;
+      top: 8px;
+      right: 14px;
+      content: "";
+    }
+
+    &:before {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #333;
+      border-radius: 50%;
+    }
+
+    &:after {
+      top: 24px;
+      right: 10px;
+
+      width: 8px;
+      height: 2px;
+      background-color: #333;
+      transform: rotate(45deg);
+    }
+
+    > input {
+      width: 100%;
+      padding-left: 20px;
+      padding-right: 40px;
+      border: none;
+      font-size: 16px;
+      outline: none;
+      background-color: transparent;
+    }
+  }
+}
+
+/* 页面内嵌页外框 */
+.page-wapper {
+  padding: 20px 40px;
+  margin: 20px;
+  border: 1px solid #ddd;
+  background-color: white;
+}
