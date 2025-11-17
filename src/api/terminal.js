@@ -214,16 +214,23 @@ export function ZW_Authenticate() {
     // url: 'http://127.0.0.1:9999/Authenticate',
     url: 'http://127.0.0.1:18889/api/getStatus',
     // method: 'GET'
-    method: 'post'
+    method: 'POST'
   })
 }
 // 至唯读取身份信息
+// export function ZW_getIdCardInfo() {
+//   return gpy_request({
+//     url: 'http://127.0.0.1:18889/api/readCert',
+//     // url: 'http://127.0.0.1:9999/getUserInfo',
+//     // method: 'GET'
+//     method: 'POST'
+//   })
+// }
 export function ZW_getIdCardInfo() {
   return gpy_request({
-    url: 'http://127.0.0.1:18889/api/disconnect',
-    // url: 'http://127.0.0.1:9999/getUserInfo',
-    // method: 'GET'
-    method: 'POST'
+    url: 'http://127.0.0.1:18889/api/readCert',
+    method: 'GET',
+    params: { _t: Date.now() } // ← 强制刷新
   })
 }
 // 至唯关闭读卡器

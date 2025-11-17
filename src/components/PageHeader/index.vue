@@ -110,10 +110,8 @@ export default {
       }
     },
     login() {
-      debugger
       // 预留开发环境登录入口
       if (this.$route.query.mode === 'test' || this.isZww) {
-        debugger
         this.$utils.setLocalItem('mode', 'test')
         this.loginDialogVisible = true
         this.$api.getUUID().then((res) => {
@@ -129,21 +127,6 @@ export default {
         })
       } else {
         this.loginVisible = true
-debugger
-        //换成g4b测试环境
-        // fetch('https://test.g4b.cn/user-platform/rest/getUUID')
-        //     .then(response => response.json())
-        //     .then((res) => {
-        //       if (res.resultCode === '1') {
-        //         this.uuid = res.data.uuid // 获取uuid
-        //             // const codeUrl = `https://scjg.hubei.gov.cn${this.$utils.getPrefix()}/getAuthorize?uuid=${this.uuid}`
-        //             // const codeUrl = `https://rong.wetruetech.cn${this.$utils.getPrefix()}/ecGovBizHubei/#/?type=4&uuid=${this.uuid}`//这里修改了
-        //             const codeUrl = `https://scjg.hubei.gov.cn/zhkb/ecGovBizHubei/#/?type=4&uuid=${this.uuid}`
-        //             this.codeUrl = codeUrl
-        //             this.intervalID = setInterval(this.getRusult, 5 * 1000)
-        //             return
-        //       }
-        //     })
         this.$api.getUUID().then((res) => {
           if (res.resultCode === '1') {
             this.uuid = res.data.uuid // 获取uuid

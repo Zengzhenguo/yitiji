@@ -131,55 +131,38 @@ export default {
           })
         })
       }
-      else if (device === 'ZW1' ) {
-        // 读卡初始
+      else if (device === 'ZW1') {
         ZW_initIdCard().then(res => {
-          debugger
-          if (res.resultFlag)  {
-            this.$utils.showError(res.message)
-            this.$confirm('请确认身份证已放至读卡区', '温馨提示', {
+          if (res.resultFlag !== 0) { // ✅ 修正判断
+            this.$utils.showError(res.errorMsg)
+            this.$confirm('请确认身份证已放至读卡器', '温馨提示', {
               confirmButtonText: '已放好',
-              showCancelButton: false,
-              closeOnPressEscape: false,
-              closeOnClickModal: false
-            }).then(() => {
-              // 如果没读到信息，则关闭读卡器再执行读卡操作
-              this.getId()
-            })
+              showCancelButton: false
+            }).then(() => this.getId())
             return
           }
-          // 读卡认证
-          ZW_Authenticate().then(res => {
-            // if (res.flag === 500) {
-            //   this.$utils.showError(res.message)
-            //   this.$confirm('请确认身份证已放至读卡区', '温馨提示', {
-            //     confirmButtonText: '已放好',
-            //     showCancelButton: false,
-            //     closeOnPressEscape: false,
-            //     closeOnClickModal: false
-            //   }).then(() => {
-            //     // 如果没读到信息，则关闭读卡器再执行读卡操作
-            //     this.getId()
-            //   })
-            //   return
-            // }
-            ZW_getIdCardInfo().then(res => {
-              debugger
-              // if (res.flag === 500) {
-              //   this.$utils.showError(res.message)
-              //   this.$confirm('请确认身份证已放至读卡区', '温馨提示', {
-              //     confirmButtonText: '已放好',
-              //     showCancelButton: false,
-              //     closeOnPressEscape: false,
-              //     closeOnClickModal: false
-              //   }).then(() => {
-              //     // 如果没读到信息，则关闭读卡器再执行读卡操作
-              //     this.getId()
-              //   })
-              //   return
-              //
 
-              this.$utils.setItem('userInfoOld', res.data)
+          ZW_Authenticate().then(res => {
+            if (res.resultFlag !== 0) { // ✅ 添加认证判断
+              this.$utils.showError(res.errorMsg)
+              this.$confirm('身份证认证失败，请重试', '温馨提示', {
+                confirmButtonText: '重新读取',
+                showCancelButton: false
+              }).then(() => this.getId())
+              return
+            }
+
+            ZW_getIdCardInfo().then(res => {
+              if (res.resultFlag !== 0) { // ✅ 添加读卡判断
+                this.$utils.showError(res.errorMsg)
+                this.$confirm('读取身份信息失败，请重试', '温馨提示', {
+                  confirmButtonText: '重新读取',
+                  showCancelButton: false
+                }).then(() => this.getId())
+                return
+              }
+
+              // ✅ 正确提取数据
               this.$utils.setItem('userInfo', res.resultContent)
               this.$router.push('/face')
             })
